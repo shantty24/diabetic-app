@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diabetic Retinopathy Detection</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+  
+    <div id="logo">
+  <img src="1.png" alt="RetinaCheck Logo" id="logo-img" width="50" height="50">
+  <span id="logo-text">RetinaCheck</span>
+</div>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#prediction">CheckUp</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main>
+    <section id="home">
+      <div class="page-content">
+        
+        <h1>Welcome to Diabetic Retinopathy Detection</h1>
+        <p>This platform helps in diagnosing diabetic retinopathy from retina images.</p>
+        <p>Diabetic retinopathy is a common complication of diabetes, affecting the eyes' blood vessels. Early detection and treatment are crucial to prevent vision loss.</p>
+        <p>Our advanced machine learning algorithms analyze retina images with high accuracy, providing quick and reliable predictions for diabetic retinopathy.</p>
+        <p>Key features:</p>
+        <ul>
+          <li>Fast and accurate diagnosis</li>
+          <li>User-friendly interface</li>
+          <li>Secure data handling</li>
+        </ul>
+        <p>Get started by uploading your retina image and receive instant results!</p>
+        <a href="#prediction"><button>Let's Get Started</button></a>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="page-content">
+        <h2>About</h2>
+        <p>Diabetic retinopathy is a diabetes complication that affects the eyes. It occurs when high blood sugar levels damage the blood vessels in the retina, leading to vision problems and potentially blindness if left untreated.</p>
+        <h3>Causes</h3>
+        <p>Prolonged high blood sugar levels and uncontrolled diabetes are the primary causes of diabetic retinopathy. Other factors such as high blood pressure, high cholesterol levels, and smoking can also increase the risk.</p>
+        <h3>Symptoms</h3>
+        <p>Early stages of diabetic retinopathy may not cause noticeable symptoms. As the condition progresses, symptoms may include:</p>
+        <ul>
+          <li>Blurred or distorted vision</li>
+          <li>Floaters or spots in the field of vision</li>
+          <li>Difficulty seeing at night</li>
+          <li>Loss of central vision</li>
+        </ul>
+        <h3>Risk Factors</h3>
+        <p>Risk factors for diabetic retinopathy include:</p>
+        <ul>
+          <li>Poorly controlled diabetes</li>
+          <li>High blood pressure</li>
+          <li>High cholesterol levels</li>
+          <li>Smoking</li>
+          <li>Long duration of diabetes</li>
+          <li>Pregnancy</li>
+        </ul>
+        <h3>Treatment</h3>
+        <p>Treatment for diabetic retinopathy depends on the stage of the disease and may include:</p>
+        <ul>
+          <li>Control of blood sugar, blood pressure, and cholesterol levels</li>
+          <li>Intravitreal injections of medications to reduce swelling and leakage of fluid</li>
+          <li>Laser treatment to shrink abnormal blood vessels or seal leaking ones</li>
+          <li>Vitrectomy surgery to remove blood and scar tissue from the eye</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="prediction">
+      <div class="page-content">
+        <h2>CheckUp</h2>
+        
+        <form id="predictionForm" onsubmit="event.preventDefault();">
+          <label for="upload">Upload Retina Image : </label>
+          <input type="file" accept="image/*" id="upload" required style="display: none;">
+          <button id="uploadButton" type="button">Select Image</button>
+          <div id="spinner" style="display: none;">Loading...</div>
+          
+        </form>
+        <br/>
+                                                                           
+
+        <div class="preview-image-container">
+            <img id="preview-image" src="#" alt="Preview Image" class="preview-image">
+          </div>
+        <div id="prediction-content" style="margin-top: 20px;"></div>
+      </div>
+    </section>
+
+    <section id="contact ">
+      <div class="page-content">
+        <h2>Contact Us</h2>
+        <p>Contact us for any inquiries or assistance.</p>
+        <p>Email: contact@retinacheck.com</p>
+        <p>Phone: +1 123-456-7890</p>
+        
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Diabetic Retinopathy Detection</p>
+  </footer>
+
+  
+  <script>
+    // Function to scroll to a section by its ID
+    function scrollToSection(sectionId) {
+      var section = document.getElementById(sectionId);
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Function to handle image selection
+    document.getElementById('uploadButton').addEventListener('click', function() {
+      document.getElementById('upload').click(); // Trigger click event on file input
+    })
+
+    // Function to handle image preview
+    document.getElementById('upload').addEventListener('change', function(event) {
+      const file = event.target.files[0]; // Get the selected file
+      const reader = new FileReader(); // Create a FileReader object
+
+      // Define the onload function for the FileReader object
+      reader.onload = function(e) {
+        const previewImage = document.getElementById('preview-image'); // Get the preview image element
+        previewImage.src = e.target.result; // Set the src attribute to the data URL of the selected file
+      };
+
+      // Read the selected file as a data URL
+      reader.readAsDataURL(file);
+    });
+
+    function predict() {
+      const fileInput = document.getElementById('upload');
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+
+      document.getElementById('spinner').style.display = 'inline-block';
+
+      // Simulate delay using setTimeout
+      setTimeout(function() {
+        fetch('http://127.0.0.1:5000/predict', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Find max accuracy prediction
+          const predictions = data.predictions[0];
+          const maxAccuracy = Math.max(...predictions);
+          const maxIndex = predictions.indexOf(maxAccuracy);
+
+          // Display max accuracy prediction
+          const labels = ['No DR', 'Mild', 'Moderate', 'Severe', 'Proliferative DR']; // Add your labels here
+          const maxPredictionLabel = labels[maxIndex];
+          const confidence = (maxAccuracy * 100).toFixed(2);
+
+          // Display the prediction result on the prediction page
+          const predictionContent = document.getElementById('prediction-content');
+          predictionContent.innerHTML = `<span>Prediction:</span> ${maxPredictionLabel} (${confidence}%)`;
+          document.getElementById('spinner').style.display = 'none';
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('prediction-content').innerText = 'Error occurred during prediction.';
+          document.getElementById('spinner').style.display = 'none';
+        });
+      }, 2000); // Delay for 2 seconds (2000 milliseconds)
+    }
+
+    document.getElementById('upload').addEventListener('change', predict);
+  </script>
+</body>
+</html>

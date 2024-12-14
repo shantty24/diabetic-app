@@ -1,0 +1,7 @@
+Flask
+Flask-Cors
+matplotlib
+numpy
+opencv-python
+pandas
+tensorflow
